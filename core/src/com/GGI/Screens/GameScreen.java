@@ -11,6 +11,7 @@ import com.GGI.OrbitBall.OrbitBall;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL30;
@@ -32,7 +33,6 @@ public class GameScreen implements Screen, InputProcessor{
 	public SpriteBatch pic;
 	public int hs;
 	public TextureRegion c = new TextureRegion(new Texture(Gdx.files.internal("CutCircle.png")));
-	public Texture over = new Texture(Gdx.files.internal("RCutCircle.png"));
 	public ArrayList<Barrier> barriers  = new ArrayList<Barrier>();
 	public float speed=.5f;
 	public Player player;
@@ -43,10 +43,13 @@ public class GameScreen implements Screen, InputProcessor{
 	public BitmapFont font;
 	private int score = 0;
 	public int w = Gdx.graphics.getWidth(),h=Gdx.graphics.getHeight();
-	public static final String FONT_CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789][_!$%#@|\\/?-+=()*&.;,{}\"´`'<>";
+	
 	
 	public GameScreen(OrbitBall o){
 		this.o=o;
+		this.font=o.font;
+		
+		
 			barriers.add(new Barrier(this,1,(float) (Math.random()*360)));
 			barriers.add(new Barrier(this,2,-(float) (Math.random()*360)));
 			barriers.add(new Barrier(this,3,(float) (Math.random()*360)));
@@ -54,11 +57,7 @@ public class GameScreen implements Screen, InputProcessor{
 			
 			player = new Player(this);
 			
-			FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Neou-Bold.ttf"));
 			
-			font = generator.generateFont(150,FONT_CHARACTERS,false);
-			generator.dispose();
-			font.setColor(1,1,1,1);
 	}
 	
 	
@@ -75,6 +74,8 @@ public class GameScreen implements Screen, InputProcessor{
 		
 		
 		if(gameOver){
+		
+			if(o.gameCount%3==0&&o.gameCount>0){o.popup();System.out.println("Popup");}
 			
 			if(score>hs){hs=score;
 			FileHandle file = Gdx.files.local("score.txt");
@@ -96,7 +97,7 @@ public class GameScreen implements Screen, InputProcessor{
 			o.setScreen(new GameScreen(o));
 			}
 			else{
-				System.out.println(count);
+			//	System.out.println(count);
 				count++;
 			}
 		}
@@ -202,14 +203,19 @@ public class GameScreen implements Screen, InputProcessor{
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 		start = false;
 		if(!gameOver){
-		System.out.println(Math.abs((barriers.get(player.tier).rot)-(barriers.get(player.tier+1).rot))%360);
-		if(player.tier<barriers.size()-1&&(Math.abs((barriers.get(player.tier).rot)-(barriers.get(player.tier+1).rot))%360<35||Math.abs((barriers.get(player.tier).rot)-(barriers.get(player.tier+1).rot))%360>325)){
-		player.tier++;score ++;}
+		//System.out.println((Math.abs((player.rot)-(barriers.get(player.tier+1).rot)))%360);
+		if(player.tier<barriers.size()-1&&((Math.abs((player.rot)-(barriers.get(player.tier+1).rot)))%360<35||(Math.abs((player.rot)-(barriers.get(player.tier+1).rot)))%360>325)){
+		player.tier++;player.a*=-1;score ++;
+		player.dif = (Math.abs((player.rot)-(barriers.get(player.tier).rot)))%360;
+		System.out.println(player.dif);
+		}
 		else{
 			
 			gameOver=true;
+			o.gameCount++;
 		}
 		}
+		if(player.tier>=barriers.size()){player.tier--;}
 		return true;
 	}
 

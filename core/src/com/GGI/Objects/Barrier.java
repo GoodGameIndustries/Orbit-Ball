@@ -24,8 +24,8 @@ public class Barrier extends TextureRegion{
 	}
 	
 	private void calibrate() {
-		bounds.width = (w/4)*scale;
-		bounds.height = (w/4)*scale;
+		bounds.width = (h/8)*scale;
+		bounds.height = (h/8)*scale;
 		bounds.x=(w/2)-(bounds.width/2f);
 		bounds.y=(h/2)-(bounds.height/2f);
 		
@@ -33,11 +33,11 @@ public class Barrier extends TextureRegion{
 
 	public void update(){
 		scale-=.01f;
-		if(scale<=0){s.barriers.remove(this);s.barriers.add(new Barrier(s,4f,rot));s.player.tier-=1;if(s.player.tier<=-1){s.gameOver=true;}}
+		if(scale<=0){s.barriers.remove(this);s.barriers.add(new Barrier(s,4f,rot));s.player.tier-=1;if(s.player.tier<=-1){s.gameOver=true;s.o.gameCount++;}}
 		
 		calibrate();
 		
-		if(s.gameOver){super.setRegion(s.over);}
+		
 		
 	}
 }

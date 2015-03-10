@@ -2,25 +2,33 @@ package com.GGI.Screens;
 
 import com.GGI.OrbitBall.OrbitBall;
 import com.GGI.UI.Button;
+import com.GGI.UI.Title;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Rectangle;
 
 
 public class MainMenuScreen implements Screen,InputProcessor{
 
 	public OrbitBall o;
-	public Texture bg = new Texture(Gdx.files.internal("MainScreen.png"));
-	public Button help = new Button("Help.png","HelpDown.png");
-	public Button play = new Button("Play.png","PlayDown.png");
+	public Button help;
+	public Button play;
+	public Button rate;
+	public Title title;
 	public SpriteBatch pic;
 	public int w = Gdx.graphics.getWidth(),h = Gdx.graphics.getHeight();
 	
 	public MainMenuScreen(OrbitBall o){
 		this.o=o;
+		help = new Button(o.font,"Help",.35f);
+		play = new Button(o.font,"Play",.6f);
+		rate = new Button(o.font,"Rate",.1f);
+		title = new Title(o.font);
 	}
 	
 	
@@ -30,10 +38,13 @@ public class MainMenuScreen implements Screen,InputProcessor{
 		Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
 		
 		pic.begin();
-		pic.draw(bg,0,0,w,h);
-		pic.draw(play.getState(),(w/2)-(w/8),5*h/8,(w/4),(w/4));
-		pic.draw(help.getState(),(w/2)-(w/8),3*h/8,(w/4),(w/4));
+		//pic.draw(bg,0,0,w,h);
+		
 		pic.end();
+		title.render(delta);
+		play.render(delta);
+		help.render(delta);
+		rate.render(delta);
 		
 	}
 
@@ -98,14 +109,15 @@ public class MainMenuScreen implements Screen,InputProcessor{
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 		screenY = h-screenY;
-		if(screenX>(w/2)-(w/8)&&screenX<((w/2)-(w/8))+w/4){
-			if(screenY>5*h/8&&screenY<(5*h/4)+w/4){
-				play.press();
-			}
-			else if(screenY>3*h/8&&screenY<(3*h/4)+w/4){
-				help.press();
-			}
-			
+		Rectangle touch = new Rectangle(screenX,screenY,1,1);
+		if(Intersector.overlaps(touch, play.bounds)){
+			play.press();
+		}
+		else if(Intersector.overlaps(touch, help.bounds)){
+			help.press();
+		}
+		else if(Intersector.overlaps(touch, rate.bounds)){
+			rate.press();
 		}
 		return true;
 	}
@@ -114,20 +126,22 @@ public class MainMenuScreen implements Screen,InputProcessor{
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 		screenY = h-screenY;
-		help.release();
 		play.release();
-		
-		if(screenX>(w/2)-(w/8)&&screenX<((w/2)-(w/8))+w/4){
-			if(screenY>5*h/8&&screenY<(5*h/4)+w/4){
-				o.setScreen(new GameScreen(o));
-			}
-			else if(screenY>3*h/8&&screenY<(3*h/4)+w/4){
-				o.setScreen(new HelpScreen(o));
-			}
-			
+		help.release();
+		rate.release();
+		Rectangle touch = new Rectangle(screenX,screenY,1,1);
+		if(Intersector.overlaps(touch, play.bounds)){
+			o.setScreen(new GameScreen(o));
+		}
+		else if(Intersector.overlaps(touch, help.bounds)){
+			o.setScreen(new HelpScreen(o));
+		}
+		else if(Intersector.overlaps(touch, rate.bounds)){
+			Gdx.net.openURI("https://play.google.com/store/apps/details?id=com.GGI.OrbitBall.android&hl=en");
 		}
 		return true;
 	}
+	
 
 
 	@Override

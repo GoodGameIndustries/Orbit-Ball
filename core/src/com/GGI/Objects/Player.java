@@ -13,17 +13,24 @@ public class Player extends TextureRegion{
 	public float w = Gdx.graphics.getWidth(),h = Gdx.graphics.getHeight();
 	public int tier=0;
 	public float rot;
+	public float dif = 0;
+	public int a = -1;
 	public Player(GameScreen s){
 		super(s.pText);
 		this.s=s;
 		bounds = s.barriers.get(tier).bounds;
-		rot = s.barriers.get(tier).rot;
+		rot = s.barriers.get(tier).rot - dif;
 	}
 	
 	public void update(){
 	if(tier!=-1){
 		bounds = s.barriers.get(tier).bounds;
-		rot = s.barriers.get(tier).rot;
+		if(a>0){
+		rot = s.barriers.get(tier).rot + dif;
+		}
+		else{
+			rot = s.barriers.get(tier).rot - dif;
+		}
 	}
 	}
 	
